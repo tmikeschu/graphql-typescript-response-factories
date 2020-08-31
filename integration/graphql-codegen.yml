@@ -4,12 +4,10 @@ documents: "./integration/queries.graphql"
 generates:
   integration/graphql-types.tsx:
     config:
-      gqlImport: "graphql-tag"
-      apolloReactCommonImportFrom: "@apollo/react-common"
       withHooks: false
     plugins:
       - typescript
       - typescript-operations
       - typescript-react-apollo
-      - "@homebound/graphql-typescript-factories"
+      - "@tmikeschu/graphql-typescript-factories"
       - ./build/index.js

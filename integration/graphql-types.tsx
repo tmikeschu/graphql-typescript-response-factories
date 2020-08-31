@@ -1,6 +1,7 @@
-import gql from 'graphql-tag';
-import * as ApolloReactCommon from '@apollo/react-common';
+import { gql } from '@apollo/client';
+import * as Apollo from '@apollo/client';
 export type Maybe<T> = T | null;
+export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: string;
@@ -11,9 +12,8 @@ export type Scalars = {
   Date: any;
 };
 
-/** An entity that will be a mapped typed */
 export type Author = {
-   __typename?: 'Author';
+  __typename?: 'Author';
   name: Scalars['String'];
   summary: AuthorSummary;
   popularity: Popularity;
@@ -21,41 +21,22 @@ export type Author = {
   birthday?: Maybe<Scalars['Date']>;
 };
 
-export type AuthorInput = {
-  name?: Maybe<Scalars['String']>;
-};
-
-/** A DTO that is just some fields */
 export type AuthorSummary = {
-   __typename?: 'AuthorSummary';
+  __typename?: 'AuthorSummary';
   author: Author;
   numberOfBooks: Scalars['Int'];
   amountOfSales?: Maybe<Scalars['Float']>;
 };
 
 export type Book = {
-   __typename?: 'Book';
+  __typename?: 'Book';
   name: Scalars['String'];
 };
 
-
-export type Mutation = {
-   __typename?: 'Mutation';
-  saveAuthor: SaveAuthorResult;
-};
-
-
-export type MutationSaveAuthorArgs = {
-  input: AuthorInput;
-};
-
-export enum Popularity {
-  Low = 'Low',
-  High = 'High'
-}
+export type SearchResult = Author | Book;
 
 export type Query = {
-   __typename?: 'Query';
+  __typename?: 'Query';
   authors: Array<Author>;
   authorSummaries: Array<AuthorSummary>;
   search: Array<SearchResult>;
@@ -73,19 +54,37 @@ export type QuerySearchArgs = {
   query: Scalars['String'];
 };
 
+export type Mutation = {
+  __typename?: 'Mutation';
+  saveAuthor: SaveAuthorResult;
+};
+
+
+export type MutationSaveAuthorArgs = {
+  input: AuthorInput;
+};
+
 export type SaveAuthorResult = {
-   __typename?: 'SaveAuthorResult';
+  __typename?: 'SaveAuthorResult';
   author: Author;
 };
 
-export type SearchResult = Author | Book;
+export type AuthorInput = {
+  name?: Maybe<Scalars['String']>;
+};
+
+export enum Popularity {
+  Low = 'Low',
+  High = 'High'
+}
 
 export enum Working {
   Yes = 'YES',
   No = 'NO'
 }
 
-export type GetAuthorSummariesQueryVariables = {};
+
+export type GetAuthorSummariesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type GetAuthorSummariesQuery = (
@@ -99,9 +98,9 @@ export type GetAuthorSummariesQuery = (
   )> }
 );
 
-export type SaveAuthorMutationVariables = {
+export type SaveAuthorMutationVariables = Exact<{
   input: AuthorInput;
-};
+}>;
 
 
 export type SaveAuthorMutation = (
@@ -115,7 +114,7 @@ export type SaveAuthorMutation = (
   ) }
 );
 
-export type CurrentAuthorQueryVariables = {};
+export type CurrentAuthorQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type CurrentAuthorQuery = (
@@ -126,9 +125,9 @@ export type CurrentAuthorQuery = (
   )> }
 );
 
-export type SearchQueryVariables = {
+export type SearchQueryVariables = Exact<{
   query: Scalars['String'];
-};
+}>;
 
 
 export type SearchQuery = (
@@ -146,7 +145,7 @@ export type SearchQuery = (
   )> }
 );
 
-export type RandomIdQueryVariables = {};
+export type RandomIdQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type RandomIdQuery = (
@@ -164,7 +163,7 @@ export const GetAuthorSummariesDocument = gql`
   }
 }
     `;
-export type GetAuthorSummariesQueryResult = ApolloReactCommon.QueryResult<GetAuthorSummariesQuery, GetAuthorSummariesQueryVariables>;
+export type GetAuthorSummariesQueryResult = Apollo.QueryResult<GetAuthorSummariesQuery, GetAuthorSummariesQueryVariables>;
 export const SaveAuthorDocument = gql`
     mutation SaveAuthor($input: AuthorInput!) {
   saveAuthor(input: $input) {
@@ -174,9 +173,9 @@ export const SaveAuthorDocument = gql`
   }
 }
     `;
-export type SaveAuthorMutationFn = ApolloReactCommon.MutationFunction<SaveAuthorMutation, SaveAuthorMutationVariables>;
-export type SaveAuthorMutationResult = ApolloReactCommon.MutationResult<SaveAuthorMutation>;
-export type SaveAuthorMutationOptions = ApolloReactCommon.BaseMutationOptions<SaveAuthorMutation, SaveAuthorMutationVariables>;
+export type SaveAuthorMutationFn = Apollo.MutationFunction<SaveAuthorMutation, SaveAuthorMutationVariables>;
+export type SaveAuthorMutationResult = Apollo.MutationResult<SaveAuthorMutation>;
+export type SaveAuthorMutationOptions = Apollo.BaseMutationOptions<SaveAuthorMutation, SaveAuthorMutationVariables>;
 export const CurrentAuthorDocument = gql`
     query CurrentAuthor {
   currentAuthor {
@@ -184,7 +183,7 @@ export const CurrentAuthorDocument = gql`
   }
 }
     `;
-export type CurrentAuthorQueryResult = ApolloReactCommon.QueryResult<CurrentAuthorQuery, CurrentAuthorQueryVariables>;
+export type CurrentAuthorQueryResult = Apollo.QueryResult<CurrentAuthorQuery, CurrentAuthorQueryVariables>;
 export const SearchDocument = gql`
     query Search($query: String!) {
   search(query: $query) {
@@ -200,13 +199,13 @@ export const SearchDocument = gql`
   }
 }
     `;
-export type SearchQueryResult = ApolloReactCommon.QueryResult<SearchQuery, SearchQueryVariables>;
+export type SearchQueryResult = Apollo.QueryResult<SearchQuery, SearchQueryVariables>;
 export const RandomIdDocument = gql`
     query RandomId {
   randomId
 }
     `;
-export type RandomIdQueryResult = ApolloReactCommon.QueryResult<RandomIdQuery, RandomIdQueryVariables>;
+export type RandomIdQueryResult = Apollo.QueryResult<RandomIdQuery, RandomIdQueryVariables>;
 export interface AuthorOptions {
   __typename?: "Author";
   name?: Author["name"];
@@ -246,7 +245,6 @@ function maybeNewOrNullAuthor(value: AuthorOptions | undefined | null, cache: Re
     return newAuthor(value, cache);
   }
 }
-
 export interface AuthorSummaryOptions {
   __typename?: "AuthorSummary";
   author?: AuthorOptions;
@@ -285,7 +283,6 @@ function maybeNewOrNullAuthorSummary(
     return newAuthorSummary(value, cache);
   }
 }
-
 export interface BookOptions {
   __typename?: "Book";
   name?: Book["name"];
@@ -317,7 +314,6 @@ function maybeNewOrNullBook(value: BookOptions | undefined | null, cache: Record
     return newBook(value, cache);
   }
 }
-
 export interface SaveAuthorResultOptions {
   __typename?: "SaveAuthorResult";
   author?: AuthorOptions;
@@ -358,7 +354,6 @@ function maybeNewOrNullSaveAuthorResult(
     return newSaveAuthorResult(value, cache);
   }
 }
-
 let nextFactoryIds: Record<string, number> = {};
 
 export function resetFactoryIds() {
