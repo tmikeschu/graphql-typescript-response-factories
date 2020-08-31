@@ -6,6 +6,8 @@ import {
   GraphQLOutputType,
   GraphQLSchema,
   OperationDefinitionNode,
+  isUnionType,
+  isScalarType,
 } from "graphql";
 import { Code, code } from "ts-poet";
 import PluginOutput = Types.PluginOutput;
@@ -16,7 +18,7 @@ export const plugin: PluginFunction = async (schema, documents) => {
   documents.forEach((d) => {
     if (d.document) {
       d.document.definitions.forEach((d) => {
-        if (d.kind === "OperationDefinition" && d.name) {
+        if (d.kind === "OperationDefinition" && d.name && d.operation !== "subscription") {
           factories.push(newOperationFactory(schema, d));
         }
       });
@@ -40,12 +42,27 @@ function newOperationFactory(schema: GraphQLSchema, def: OperationDefinitionNode
             const field = rootType?.getFields()[name];
             if (field) {
               let type = maybeDenull(field.type);
+              let isList = false;
               if (type instanceof GraphQLList) {
                 type = maybeDenull(type.ofType);
-                return `${name}?: ${(type as any).name}Options[];`;
+                isList = true;
+              }
+              const asList = isList ? "[]" : "";
+
+              if (isUnionType(type)) {
+                return type
+                  .getTypes()
+                  .map((t) => {
+                    const orNull = t instanceof GraphQLNonNull ? "" : " | null";
+                    return `${t.name}?: ${t.name}Options${asList}${orNull}`;
+                  })
+                  .join("\n");
+              } else if (isScalarType(type)) {
+                const orNull = field.type instanceof GraphQLNonNull ? "" : " | null";
+                return `${name}?: Scalars["${type.name}"]${asList}${orNull};`;
               } else {
                 const orNull = field.type instanceof GraphQLNonNull ? "" : " | null";
-                return `${name}?: ${(type as GraphQLObjectType).name}Options${orNull};`;
+                return `${name}?: ${(type as GraphQLObjectType).name}Options${asList}${orNull};`;
               }
             }
           }
@@ -65,7 +82,36 @@ function newOperationFactory(schema: GraphQLSchema, def: OperationDefinitionNode
               let type = maybeDenull(field.type);
               if (type instanceof GraphQLList) {
                 type = maybeDenull(type.ofType);
-                return `${name}: data["${name}"]?.map(d => new${(type as GraphQLObjectType).name}(d)) || [],`;
+                if (isUnionType(type)) {
+                  const types = type
+                    .getTypes()
+                    .reduce(
+                      (acc, t) => {
+                        const map = `(data["${t.name}"]?.map(d => new${t.name}(d)) || [])`;
+                        return `${acc}.concat(${map})`;
+                      },
+                      `([] as Array<${type
+                        .getTypes()
+                        .map((t) => t.name)
+                        .join(" | ")}>)`,
+                    )
+                    .replace(/.concat\($/, "");
+                  return `${name}: ${types}`;
+                } else {
+                  return `${name}: data["${name}"]?.map(d => new${(type as GraphQLObjectType).name}(d)) || [],`;
+                }
+              }
+              if (isUnionType(type)) {
+                const types = type
+                  .getTypes()
+                  .map((t) => {
+                    const orNull = t instanceof GraphQLNonNull ? "" : "OrNull";
+                    return `data["${t.name}"] ? maybeNew${orNull}${t.name}(data["${t.name}"], {})`;
+                  })
+                  .join(" : ");
+                return `${name}: ${types} : undefined`;
+              } else if (isScalarType(type)) {
+                return `${name}: data["${name}"] || undefined`;
               } else {
                 const orNull = field.type instanceof GraphQLNonNull ? "" : "OrNull";
                 return `${name}: maybeNew${orNull}${

@@ -30,6 +30,7 @@ type Query {
   authorSummaries: [AuthorSummary!]!
   search(query: String!): [SearchResult!]!
   currentAuthor: Author
+  randomId: ID
 }
 
 type Mutation {
@@ -55,4 +56,3 @@ enum Working {
 }
 
 scalar Date
-

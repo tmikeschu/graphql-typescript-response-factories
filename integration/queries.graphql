@@ -18,3 +18,21 @@ query CurrentAuthor {
     name
   }
 }
+
+query Search($query: String!) {
+  search(query: $query) {
+    ... on Author {
+      name
+      summary {
+        numberOfBooks
+      }
+    }
+    ... on Book {
+      name
+    }
+  }
+}
+
+query RandomId {
+  randomId
+}

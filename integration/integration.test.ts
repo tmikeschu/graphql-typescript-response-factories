@@ -3,6 +3,10 @@ import {
   newCurrentAuthorResponse,
   newGetAuthorSummariesResponse,
   newSaveAuthorResponse,
+  newSearchData,
+  newAuthor,
+  newBook,
+  newRandomIdData,
 } from "./graphql-types";
 
 describe("factories", () => {
@@ -75,5 +79,22 @@ describe("factories", () => {
   it("can return non-null from nullable queries", () => {
     const { result } = newCurrentAuthorResponse({ currentAuthor: {} });
     expect(result.data?.currentAuthor?.name).toEqual("name");
+  });
+
+  it("handles unions and arrays of unions", () => {
+    const authorName = "A";
+    const bookName = "By A";
+    const { search } = newSearchData({
+      Author: [newAuthor({ name: authorName })],
+      Book: [newBook({ name: bookName })],
+    });
+    expect(search.length).toEqual(2);
+    expect(search.find((item) => item.name === bookName)).toBeTruthy();
+    expect(search.find((item) => item.name === authorName)).toBeTruthy();
+  });
+
+  it("handles terse scalar returns", () => {
+    const { randomId } = newRandomIdData({ randomId: "blah" });
+    expect(randomId).toEqual("blah");
   });
 });

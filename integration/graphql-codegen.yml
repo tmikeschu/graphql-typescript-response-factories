@@ -3,6 +3,10 @@ schema: "./integration/schema.graphql"
 documents: "./integration/queries.graphql"
 generates:
   integration/graphql-types.tsx:
+    config:
+      gqlImport: "graphql-tag"
+      apolloReactCommonImportFrom: "@apollo/react-common"
+      withHooks: false
     plugins:
       - typescript
       - typescript-operations

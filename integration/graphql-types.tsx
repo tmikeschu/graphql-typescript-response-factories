@@ -1,10 +1,6 @@
 import gql from 'graphql-tag';
-import * as React from 'react';
 import * as ApolloReactCommon from '@apollo/react-common';
-import * as ApolloReactComponents from '@apollo/react-components';
-import * as ApolloReactHoc from '@apollo/react-hoc';
 export type Maybe<T> = T | null;
-export type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: string;
@@ -64,6 +60,7 @@ export type Query = {
   authorSummaries: Array<AuthorSummary>;
   search: Array<SearchResult>;
   currentAuthor?: Maybe<Author>;
+  randomId?: Maybe<Scalars['ID']>;
 };
 
 
@@ -129,6 +126,34 @@ export type CurrentAuthorQuery = (
   )> }
 );
 
+export type SearchQueryVariables = {
+  query: Scalars['String'];
+};
+
+
+export type SearchQuery = (
+  { __typename?: 'Query' }
+  & { search: Array<(
+    { __typename?: 'Author' }
+    & Pick<Author, 'name'>
+    & { summary: (
+      { __typename?: 'AuthorSummary' }
+      & Pick<AuthorSummary, 'numberOfBooks'>
+    ) }
+  ) | (
+    { __typename?: 'Book' }
+    & Pick<Book, 'name'>
+  )> }
+);
+
+export type RandomIdQueryVariables = {};
+
+
+export type RandomIdQuery = (
+  { __typename?: 'Query' }
+  & Pick<Query, 'randomId'>
+);
+
 
 export const GetAuthorSummariesDocument = gql`
     query GetAuthorSummaries {
@@ -139,23 +164,6 @@ export const GetAuthorSummariesDocument = gql`
   }
 }
     `;
-export type GetAuthorSummariesComponentProps = Omit<ApolloReactComponents.QueryComponentOptions<GetAuthorSummariesQuery, GetAuthorSummariesQueryVariables>, 'query'>;
-
-    export const GetAuthorSummariesComponent = (props: GetAuthorSummariesComponentProps) => (
-      <ApolloReactComponents.Query<GetAuthorSummariesQuery, GetAuthorSummariesQueryVariables> query={GetAuthorSummariesDocument} {...props} />
-    );
-    
-export type GetAuthorSummariesProps<TChildProps = {}> = ApolloReactHoc.DataProps<GetAuthorSummariesQuery, GetAuthorSummariesQueryVariables> & TChildProps;
-export function withGetAuthorSummaries<TProps, TChildProps = {}>(operationOptions?: ApolloReactHoc.OperationOption<
-  TProps,
-  GetAuthorSummariesQuery,
-  GetAuthorSummariesQueryVariables,
-  GetAuthorSummariesProps<TChildProps>>) {
-    return ApolloReactHoc.withQuery<TProps, GetAuthorSummariesQuery, GetAuthorSummariesQueryVariables, GetAuthorSummariesProps<TChildProps>>(GetAuthorSummariesDocument, {
-      alias: 'getAuthorSummaries',
-      ...operationOptions
-    });
-};
 export type GetAuthorSummariesQueryResult = ApolloReactCommon.QueryResult<GetAuthorSummariesQuery, GetAuthorSummariesQueryVariables>;
 export const SaveAuthorDocument = gql`
     mutation SaveAuthor($input: AuthorInput!) {
@@ -167,23 +175,6 @@ export const SaveAuthorDocument = gql`
 }
     `;
 export type SaveAuthorMutationFn = ApolloReactCommon.MutationFunction<SaveAuthorMutation, SaveAuthorMutationVariables>;
-export type SaveAuthorComponentProps = Omit<ApolloReactComponents.MutationComponentOptions<SaveAuthorMutation, SaveAuthorMutationVariables>, 'mutation'>;
-
-    export const SaveAuthorComponent = (props: SaveAuthorComponentProps) => (
-      <ApolloReactComponents.Mutation<SaveAuthorMutation, SaveAuthorMutationVariables> mutation={SaveAuthorDocument} {...props} />
-    );
-    
-export type SaveAuthorProps<TChildProps = {}> = ApolloReactHoc.MutateProps<SaveAuthorMutation, SaveAuthorMutationVariables> & TChildProps;
-export function withSaveAuthor<TProps, TChildProps = {}>(operationOptions?: ApolloReactHoc.OperationOption<
-  TProps,
-  SaveAuthorMutation,
-  SaveAuthorMutationVariables,
-  SaveAuthorProps<TChildProps>>) {
-    return ApolloReactHoc.withMutation<TProps, SaveAuthorMutation, SaveAuthorMutationVariables, SaveAuthorProps<TChildProps>>(SaveAuthorDocument, {
-      alias: 'saveAuthor',
-      ...operationOptions
-    });
-};
 export type SaveAuthorMutationResult = ApolloReactCommon.MutationResult<SaveAuthorMutation>;
 export type SaveAuthorMutationOptions = ApolloReactCommon.BaseMutationOptions<SaveAuthorMutation, SaveAuthorMutationVariables>;
 export const CurrentAuthorDocument = gql`
@@ -193,24 +184,29 @@ export const CurrentAuthorDocument = gql`
   }
 }
     `;
-export type CurrentAuthorComponentProps = Omit<ApolloReactComponents.QueryComponentOptions<CurrentAuthorQuery, CurrentAuthorQueryVariables>, 'query'>;
-
-    export const CurrentAuthorComponent = (props: CurrentAuthorComponentProps) => (
-      <ApolloReactComponents.Query<CurrentAuthorQuery, CurrentAuthorQueryVariables> query={CurrentAuthorDocument} {...props} />
-    );
-    
-export type CurrentAuthorProps<TChildProps = {}> = ApolloReactHoc.DataProps<CurrentAuthorQuery, CurrentAuthorQueryVariables> & TChildProps;
-export function withCurrentAuthor<TProps, TChildProps = {}>(operationOptions?: ApolloReactHoc.OperationOption<
-  TProps,
-  CurrentAuthorQuery,
-  CurrentAuthorQueryVariables,
-  CurrentAuthorProps<TChildProps>>) {
-    return ApolloReactHoc.withQuery<TProps, CurrentAuthorQuery, CurrentAuthorQueryVariables, CurrentAuthorProps<TChildProps>>(CurrentAuthorDocument, {
-      alias: 'currentAuthor',
-      ...operationOptions
-    });
-};
 export type CurrentAuthorQueryResult = ApolloReactCommon.QueryResult<CurrentAuthorQuery, CurrentAuthorQueryVariables>;
+export const SearchDocument = gql`
+    query Search($query: String!) {
+  search(query: $query) {
+    ... on Author {
+      name
+      summary {
+        numberOfBooks
+      }
+    }
+    ... on Book {
+      name
+    }
+  }
+}
+    `;
+export type SearchQueryResult = ApolloReactCommon.QueryResult<SearchQuery, SearchQueryVariables>;
+export const RandomIdDocument = gql`
+    query RandomId {
+  randomId
+}
+    `;
+export type RandomIdQueryResult = ApolloReactCommon.QueryResult<RandomIdQuery, RandomIdQueryVariables>;
 export interface AuthorOptions {
   __typename?: "Author";
   name?: Author["name"];
@@ -433,6 +429,50 @@ export function newCurrentAuthorResponse(
   return {
     request: { query: CurrentAuthorDocument },
     result: { data: data instanceof Error ? undefined : newCurrentAuthorData(data) },
+    error: data instanceof Error ? data : undefined,
+  };
+}
+interface SearchDataOptions {
+  Author?: AuthorOptions[] | null;
+  Book?: BookOptions[] | null;
+}
+
+export function newSearchData(data: SearchDataOptions) {
+  return {
+    __typename: "Query" as const,
+    search: ([] as Array<Author | Book>)
+      .concat(data["Author"]?.map((d) => newAuthor(d)) || [])
+      .concat(data["Book"]?.map((d) => newBook(d)) || []),
+  };
+}
+
+export function newSearchResponse(
+  variables: SearchQueryVariables,
+  data: SearchDataOptions | Error,
+): MockedResponse<SearchQueryVariables, SearchQuery> {
+  return {
+    request: { query: SearchDocument, variables },
+    result: { data: data instanceof Error ? undefined : newSearchData(data) },
+    error: data instanceof Error ? data : undefined,
+  };
+}
+interface RandomIdDataOptions {
+  randomId?: Scalars["ID"] | null;
+}
+
+export function newRandomIdData(data: RandomIdDataOptions) {
+  return {
+    __typename: "Query" as const,
+    randomId: data["randomId"] || undefined,
+  };
+}
+
+export function newRandomIdResponse(
+  data: RandomIdDataOptions | Error,
+): MockedResponse<RandomIdQueryVariables, RandomIdQuery> {
+  return {
+    request: { query: RandomIdDocument },
+    result: { data: data instanceof Error ? undefined : newRandomIdData(data) },
     error: data instanceof Error ? data : undefined,
   };
 }
