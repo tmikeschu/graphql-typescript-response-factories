@@ -12,26 +12,26 @@
     "test:watch": "jest --watch"
   },
   "dependencies": {
-    "@graphql-codegen/cli": "^1.13.1",
-    "@graphql-codegen/plugin-helpers": "^1.13.1",
+    "@graphql-codegen/cli": "^1.17.10",
+    "@graphql-codegen/plugin-helpers": "^1.17.9",
     "graphql": "^15.3.0",
-    "react": "^16.13.1",
+    "react": "^16.14.0",
     "ts-poet": "^3.2.2"
   },
   "devDependencies": {
-    "@apollo/client": "^3.1.4",
+    "@apollo/client": "^3.2.4",
     "@graphql-codegen/typescript-operations": "^1.12.1",
-    "@graphql-codegen/typescript-react-apollo": "^2.0.6",
-    "@tmikeschu/graphql-typescript-factories": "^1.0.2",
-    "@types/jest": "^26.0.7",
-    "@types/react": "^16.9.43",
-    "eslint-config-prettier": "^6.5.0",
+    "@graphql-codegen/typescript-react-apollo": "^2.0.7",
+    "@tmikeschu/graphql-typescript-factories": "^1.0.3",
+    "@types/jest": "^26.0.14",
+    "@types/react": "^16.9.52",
+    "eslint-config-prettier": "^6.12.0",
     "eslint-plugin-prettier": "^3.1.1",
-    "husky": "^4.2.5",
-    "jest": "^26.1.0",
-    "prettier": "^2.0.5",
-    "ts-jest": "^26.1.4",
-    "typescript": "^4.0.2"
+    "husky": "^4.3.0",
+    "jest": "^26.5.3",
+    "prettier": "^2.1.2",
+    "ts-jest": "^26.4.1",
+    "typescript": "^4.0.3"
   },
   "husky": {
     "hooks": {
