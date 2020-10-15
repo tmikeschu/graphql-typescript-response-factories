@@ -1156,7 +1156,7 @@
   dependencies:
     defer-to-connect "^1.0.1"
 
-"@tmikeschu/graphql-typescript-factories@^1.0.3":
+"@tmikeschu/graphql-typescript-factories@^1.0.4":
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/@tmikeschu/graphql-typescript-factories/-/graphql-typescript-factories-1.0.4.tgz#f889a7f3f487f42e8571b95f57ad4ab3a57f36a0"
   integrity sha512-nUk0xrMTGBcH1GI2MvmGuQfas/d06wMLJI+LHgXL74B/8cZHx1lmZg8/A1FLSm5G9TC/YUBK6ktvkWMXIm4Frg==
