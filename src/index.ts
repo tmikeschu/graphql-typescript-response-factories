@@ -130,7 +130,7 @@ function newOperationFactory(schema: GraphQLSchema, def: OperationDefinitionNode
     ): MockedResponse<${name}${operation}Variables, ${name}${operation}> {
       return {
         request: { query: ${name}Document, ${hasVariables ? "variables, " : ""} },
-        result: { data: data instanceof Error ? undefined : new${name}Data(data) },
+        result: { data: data instanceof Error ? undefined : (new${name}Data(data) as ${name}${operation}) },
         error: data instanceof Error ? data : undefined,
       };
     }`;

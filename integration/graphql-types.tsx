@@ -382,7 +382,7 @@ export function newGetAuthorSummariesResponse(
 ): MockedResponse<GetAuthorSummariesQueryVariables, GetAuthorSummariesQuery> {
   return {
     request: { query: GetAuthorSummariesDocument },
-    result: { data: data instanceof Error ? undefined : newGetAuthorSummariesData(data) },
+    result: { data: data instanceof Error ? undefined : (newGetAuthorSummariesData(data) as GetAuthorSummariesQuery) },
     error: data instanceof Error ? data : undefined,
   };
 }
@@ -403,7 +403,7 @@ export function newSaveAuthorResponse(
 ): MockedResponse<SaveAuthorMutationVariables, SaveAuthorMutation> {
   return {
     request: { query: SaveAuthorDocument, variables },
-    result: { data: data instanceof Error ? undefined : newSaveAuthorData(data) },
+    result: { data: data instanceof Error ? undefined : (newSaveAuthorData(data) as SaveAuthorMutation) },
     error: data instanceof Error ? data : undefined,
   };
 }
@@ -423,7 +423,7 @@ export function newCurrentAuthorResponse(
 ): MockedResponse<CurrentAuthorQueryVariables, CurrentAuthorQuery> {
   return {
     request: { query: CurrentAuthorDocument },
-    result: { data: data instanceof Error ? undefined : newCurrentAuthorData(data) },
+    result: { data: data instanceof Error ? undefined : (newCurrentAuthorData(data) as CurrentAuthorQuery) },
     error: data instanceof Error ? data : undefined,
   };
 }
@@ -447,7 +447,7 @@ export function newSearchResponse(
 ): MockedResponse<SearchQueryVariables, SearchQuery> {
   return {
     request: { query: SearchDocument, variables },
-    result: { data: data instanceof Error ? undefined : newSearchData(data) },
+    result: { data: data instanceof Error ? undefined : (newSearchData(data) as SearchQuery) },
     error: data instanceof Error ? data : undefined,
   };
 }
@@ -467,7 +467,7 @@ export function newRandomIdResponse(
 ): MockedResponse<RandomIdQueryVariables, RandomIdQuery> {
   return {
     request: { query: RandomIdDocument },
-    result: { data: data instanceof Error ? undefined : newRandomIdData(data) },
+    result: { data: data instanceof Error ? undefined : (newRandomIdData(data) as RandomIdQuery) },
     error: data instanceof Error ? data : undefined,
   };
 }
