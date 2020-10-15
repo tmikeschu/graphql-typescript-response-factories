@@ -5,9 +5,11 @@
   "types": "./build/",
   "scripts": {
     "build": "rm -rf build; ./node_modules/.bin/tsc",
-    "prepare": "npm run build",
+    "prepare": "yarn build",
     "format": "prettier --write 'src/**/*.{ts,js,tsx,jsx}'",
-    "graphql-codegen": "graphql-codegen --config ./integration/graphql-codegen.yml",
+    "pretypes:build": "yarn build",
+    "types:build": "graphql-codegen --config ./integration/graphql-codegen.yml",
+    "pretest": "yarn types:build",
     "test": "jest",
     "test:watch": "jest --watch"
   },
@@ -22,7 +24,7 @@
     "@apollo/client": "^3.2.4",
     "@graphql-codegen/typescript-operations": "^1.12.1",
     "@graphql-codegen/typescript-react-apollo": "^2.0.7",
-    "@tmikeschu/graphql-typescript-factories": "^1.0.4",
+    "@tmikeschu/graphql-typescript-factories": "^1.0.5",
     "@types/jest": "^26.0.14",
     "@types/react": "^16.9.52",
     "eslint-config-prettier": "^6.12.0",
