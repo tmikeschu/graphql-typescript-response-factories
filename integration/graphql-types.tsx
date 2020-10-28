@@ -42,6 +42,7 @@ export type Query = {
   search: Array<SearchResult>;
   currentAuthor?: Maybe<Author>;
   randomId?: Maybe<Scalars['ID']>;
+  randomSearchResult: SearchResult;
 };
 
 
@@ -153,6 +154,24 @@ export type RandomIdQuery = (
   & Pick<Query, 'randomId'>
 );
 
+export type RandomSearchQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type RandomSearchQuery = (
+  { __typename?: 'Query' }
+  & { randomSearchResult: (
+    { __typename?: 'Author' }
+    & Pick<Author, 'name'>
+    & { summary: (
+      { __typename?: 'AuthorSummary' }
+      & Pick<AuthorSummary, 'numberOfBooks'>
+    ) }
+  ) | (
+    { __typename?: 'Book' }
+    & Pick<Book, 'name'>
+  ) }
+);
+
 
 export const GetAuthorSummariesDocument = gql`
     query GetAuthorSummaries {
@@ -206,6 +225,22 @@ export const RandomIdDocument = gql`
 }
     `;
 export type RandomIdQueryResult = Apollo.QueryResult<RandomIdQuery, RandomIdQueryVariables>;
+export const RandomSearchDocument = gql`
+    query RandomSearch {
+  randomSearchResult {
+    ... on Author {
+      name
+      summary {
+        numberOfBooks
+      }
+    }
+    ... on Book {
+      name
+    }
+  }
+}
+    `;
+export type RandomSearchQueryResult = Apollo.QueryResult<RandomSearchQuery, RandomSearchQueryVariables>;
 export interface AuthorOptions {
   __typename?: "Author";
   name?: Author["name"];
@@ -428,8 +463,8 @@ export function newCurrentAuthorResponse(
   };
 }
 interface SearchDataOptions {
-  Author?: AuthorOptions[] | null;
-  Book?: BookOptions[] | null;
+  Author: AuthorOptions[] | null;
+  Book: BookOptions[] | null;
 }
 
 export function newSearchData(data: SearchDataOptions) {
@@ -468,6 +503,30 @@ export function newRandomIdResponse(
   return {
     request: { query: RandomIdDocument },
     result: { data: data instanceof Error ? undefined : (newRandomIdData(data) as RandomIdQuery) },
+    error: data instanceof Error ? data : undefined,
+  };
+}
+interface RandomSearchDataOptions {
+  union: { type: "Author"; value: AuthorOptions | null } | { type: "Book"; value: BookOptions | null };
+}
+
+export function newRandomSearchData(data: RandomSearchDataOptions) {
+  return {
+    __typename: "Query" as const,
+    randomSearchResult: (data.union.type === "Author"
+      ? maybeNewOrNullAuthor(data["union"]["value"], {})
+      : data.union.type === "Book"
+      ? maybeNewOrNullBook(data["union"]["value"], {})
+      : undefined) as RandomSearchQuery["randomSearchResult"],
+  };
+}
+
+export function newRandomSearchResponse(
+  data: RandomSearchDataOptions | Error,
+): MockedResponse<RandomSearchQueryVariables, RandomSearchQuery> {
+  return {
+    request: { query: RandomSearchDocument },
+    result: { data: data instanceof Error ? undefined : (newRandomSearchData(data) as RandomSearchQuery) },
     error: data instanceof Error ? data : undefined,
   };
 }

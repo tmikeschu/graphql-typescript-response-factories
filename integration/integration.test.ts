@@ -7,6 +7,7 @@ import {
   newAuthor,
   newBook,
   newRandomIdData,
+  newRandomSearchData,
 } from "./graphql-types";
 
 describe("factories", () => {
@@ -91,6 +92,8 @@ describe("factories", () => {
     expect(search.length).toEqual(2);
     expect(search.find((item) => item.name === bookName)).toBeTruthy();
     expect(search.find((item) => item.name === authorName)).toBeTruthy();
+    const { randomSearchResult } = newRandomSearchData({ union: { type: "Book", value: newBook({ name: bookName }) } });
+    expect(randomSearchResult.name).toEqual(bookName);
   });
 
   it("handles terse scalar returns", () => {

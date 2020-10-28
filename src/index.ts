@@ -29,13 +29,13 @@ export const plugin: PluginFunction = async (schema, documents) => {
 };
 
 function newOperationFactory(schema: GraphQLSchema, def: OperationDefinitionNode): Code {
-  const name = def.name?.value;
+  const defName = def.name?.value;
   const hasVariables = (def.variableDefinitions?.length || 0) > 0;
   const operation = `${def.operation.charAt(0).toUpperCase()}${def.operation.slice(1)}`;
   const rootType = operation === "Query" ? schema.getQueryType() : schema.getMutationType();
 
   return code`
-    interface ${name}DataOptions {
+    interface ${defName}DataOptions {
         ${def.selectionSet.selections.map((s) => {
           if (s.kind === "Field") {
             const name = s.name.value;
@@ -50,13 +50,23 @@ function newOperationFactory(schema: GraphQLSchema, def: OperationDefinitionNode
               const asList = isList ? "[]" : "";
 
               if (isUnionType(type)) {
-                return type
+                if (isList) {
+                  return type
+                    .getTypes()
+                    .map((t) => {
+                      const orNull = t instanceof GraphQLNonNull ? "" : " | null";
+                      return `${t.name}: ${t.name}Options${asList}${orNull}`;
+                    })
+                    .join("\n");
+                }
+                const union = type
                   .getTypes()
                   .map((t) => {
                     const orNull = t instanceof GraphQLNonNull ? "" : " | null";
-                    return `${t.name}?: ${t.name}Options${asList}${orNull}`;
+                    return `{ type: "${t.name}", value: ${t.name}Options${asList}${orNull} }`;
                   })
-                  .join("\n");
+                  .join("|");
+                return `union: ${union}`;
               } else if (isScalarType(type)) {
                 const orNull = field.type instanceof GraphQLNonNull ? "" : " | null";
                 return `${name}?: Scalars["${type.name}"]${asList}${orNull};`;
@@ -69,7 +79,7 @@ function newOperationFactory(schema: GraphQLSchema, def: OperationDefinitionNode
         })}
     }
 
-    export function new${name}Data(data: ${name}DataOptions) {
+    export function new${defName}Data(data: ${defName}DataOptions) {
       return {
         __typename: "${operation}" as const,
         ${def.selectionSet.selections.map((s) => {
@@ -106,10 +116,10 @@ function newOperationFactory(schema: GraphQLSchema, def: OperationDefinitionNode
                   .getTypes()
                   .map((t) => {
                     const orNull = t instanceof GraphQLNonNull ? "" : "OrNull";
-                    return `data["${t.name}"] ? maybeNew${orNull}${t.name}(data["${t.name}"], {})`;
+                    return `data.union.type === "${t.name}" ? maybeNew${orNull}${t.name}(data["union"]["value"], {})`;
                   })
                   .join(" : ");
-                return `${name}: ${types} : undefined`;
+                return `${name}: (${types} : undefined) as ${defName}${operation}["${name}"]`;
               } else if (isScalarType(type)) {
                 return `${name}: data["${name}"] || undefined`;
               } else {
@@ -124,13 +134,13 @@ function newOperationFactory(schema: GraphQLSchema, def: OperationDefinitionNode
       }
     }
 
-    export function new${name}Response(
-      ${hasVariables ? `variables: ${name}${operation}Variables,` : ""}
-      data: ${name}DataOptions | Error
-    ): MockedResponse<${name}${operation}Variables, ${name}${operation}> {
+    export function new${defName}Response(
+      ${hasVariables ? `variables: ${defName}${operation}Variables,` : ""}
+      data: ${defName}DataOptions | Error
+    ): MockedResponse<${defName}${operation}Variables, ${defName}${operation}> {
       return {
-        request: { query: ${name}Document, ${hasVariables ? "variables, " : ""} },
-        result: { data: data instanceof Error ? undefined : (new${name}Data(data) as ${name}${operation}) },
+        request: { query: ${defName}Document, ${hasVariables ? "variables, " : ""} },
+        result: { data: data instanceof Error ? undefined : (new${defName}Data(data) as ${defName}${operation}) },
         error: data instanceof Error ? data : undefined,
       };
     }`;

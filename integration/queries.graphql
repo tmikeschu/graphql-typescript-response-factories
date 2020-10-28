@@ -36,3 +36,17 @@ query Search($query: String!) {
 query RandomId {
   randomId
 }
+
+query RandomSearch {
+  randomSearchResult {
+    ... on Author {
+      name
+      summary {
+        numberOfBooks
+      }
+    }
+    ... on Book {
+      name
+    }
+  }
+}
