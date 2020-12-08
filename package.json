@@ -25,7 +25,7 @@
     "@graphql-codegen/typescript-operations": "^1.12.1",
     "@graphql-codegen/typescript-react-apollo": "^2.0.7",
     "@tmikeschu/graphql-typescript-factories": "^1.0.5",
-    "@types/jest": "^26.0.14",
+    "@types/jest": "^26.0.17",
     "@types/react": "^16.9.52",
     "eslint-config-prettier": "^6.12.0",
     "eslint-plugin-prettier": "^3.1.1",
