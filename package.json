@@ -16,7 +16,7 @@
   "dependencies": {
     "@graphql-codegen/cli": "^1.17.10",
     "@graphql-codegen/plugin-helpers": "^1.17.9",
-    "graphql": "^15.3.0",
+    "graphql": "^15.5.0",
     "react": "^16.14.0",
     "ts-poet": "^3.2.2"
   },
