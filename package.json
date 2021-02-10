@@ -21,7 +21,7 @@
     "ts-poet": "^3.2.2"
   },
   "devDependencies": {
-    "@apollo/client": "^3.2.4",
+    "@apollo/client": "^3.3.9",
     "@graphql-codegen/typescript-operations": "^1.12.1",
     "@graphql-codegen/typescript-react-apollo": "^2.0.7",
     "@tmikeschu/graphql-typescript-factories": "^1.0.5",
